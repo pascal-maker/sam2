@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check formatting
-        uses: omnilib/ufmt@action-v1
+        uses: omnilib/ufmt@c715fb51f0529397bee32108ee6f9cd7f32bec92
         with:
           path: sam2 tools
           version: "2.0.0b2"

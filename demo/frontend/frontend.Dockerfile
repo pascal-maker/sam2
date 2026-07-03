@@ -1,5 +1,5 @@
 # Stage 1: Build Stage
-FROM node:22.9.0 AS build
+FROM node:22.9.0@sha256:8398ea18b8b72817c84af283f72daed9629af2958c4f618fe6db4f453c5c9328 AS build
 
 WORKDIR /app
 
@@ -22,7 +22,7 @@ COPY --chown=frontend:frontend . .
 RUN yarn build
 
 # Stage 2: Production Stage
-FROM nginx:latest
+FROM nginx:1.31.2@sha256:ec4ed8b5299e5e90694af7750eb6dffd2627317d30544d056b0371f8082f7bce
 
 RUN groupadd --system frontend \
     && useradd --system --gid frontend --home-dir /usr/share/nginx/html --shell /usr/sbin/nologin frontend \
