@@ -34,23 +34,27 @@ RUN pip install -e ".[interactive-demo]"
 # https://github.com/Kosinkadink/ComfyUI-VideoHelperSuite/issues/69#issuecomment-1826764707
 RUN rm /opt/conda/bin/ffmpeg && ln -s /bin/ffmpeg /opt/conda/bin/ffmpeg
 
+RUN groupadd --system sam2 \
+    && useradd --system --gid sam2 --home-dir ${APP_ROOT} --shell /usr/sbin/nologin sam2
+
 # Make app directory. This directory will host all files required for the
 # backend and SAM 2 inference files.
-RUN mkdir ${APP_ROOT}
+RUN mkdir ${APP_ROOT} && chown -R sam2:sam2 ${APP_ROOT}
 
 # Copy backend server files
-COPY demo/backend/server ${APP_ROOT}/server
+COPY --chown=sam2:sam2 demo/backend/server ${APP_ROOT}/server
 
 # Copy SAM 2 inference files
-COPY sam2 ${APP_ROOT}/server/sam2
+COPY --chown=sam2:sam2 sam2 ${APP_ROOT}/server/sam2
 
 # Download SAM 2.1 checkpoints
-ADD https://dl.fbaipublicfiles.com/segment_anything_2/092824/sam2.1_hiera_tiny.pt ${APP_ROOT}/checkpoints/sam2.1_hiera_tiny.pt
-ADD https://dl.fbaipublicfiles.com/segment_anything_2/092824/sam2.1_hiera_small.pt ${APP_ROOT}/checkpoints/sam2.1_hiera_small.pt
-ADD https://dl.fbaipublicfiles.com/segment_anything_2/092824/sam2.1_hiera_base_plus.pt ${APP_ROOT}/checkpoints/sam2.1_hiera_base_plus.pt
-ADD https://dl.fbaipublicfiles.com/segment_anything_2/092824/sam2.1_hiera_large.pt ${APP_ROOT}/checkpoints/sam2.1_hiera_large.pt
+ADD --chown=sam2:sam2 https://dl.fbaipublicfiles.com/segment_anything_2/092824/sam2.1_hiera_tiny.pt ${APP_ROOT}/checkpoints/sam2.1_hiera_tiny.pt
+ADD --chown=sam2:sam2 https://dl.fbaipublicfiles.com/segment_anything_2/092824/sam2.1_hiera_small.pt ${APP_ROOT}/checkpoints/sam2.1_hiera_small.pt
+ADD --chown=sam2:sam2 https://dl.fbaipublicfiles.com/segment_anything_2/092824/sam2.1_hiera_base_plus.pt ${APP_ROOT}/checkpoints/sam2.1_hiera_base_plus.pt
+ADD --chown=sam2:sam2 https://dl.fbaipublicfiles.com/segment_anything_2/092824/sam2.1_hiera_large.pt ${APP_ROOT}/checkpoints/sam2.1_hiera_large.pt
 
 WORKDIR ${APP_ROOT}/server
+USER sam2
 
 # https://pythonspeed.com/articles/gunicorn-in-docker/
 CMD gunicorn --worker-tmp-dir /dev/shm \
